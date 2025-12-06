@@ -31,7 +31,7 @@ Game development, cloud computing, OOP, data structures, digital design, systems
 
 <p align="left">
   <a href="mailto:amirhoseinsaebi.83@gmail.com">
-    <img src="https://img.shields.io/badge/Email-amirhoseinsaeb.83%40gmail.com-red?style=for-the-badge&logo=gmail" />
+    <img src="https://img.shields.io/badge/Email-amirhoseinsaebi.83%40gmail.com-red?style=for-the-badge&logo=gmail" />
   </a>
   <a href="https://www.linkedin.com/in/amir-saebi-9ab119259">
     <img src="https://img.shields.io/badge/LinkedIn-Amir%20Saebi-blue?style=for-the-badge&logo=linkedin" />
