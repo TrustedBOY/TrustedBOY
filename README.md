@@ -20,10 +20,10 @@ Game development, cloud computing, OOP, data structures, digital design, systems
 ---
 
 ## 🚀 Current Work
-- Developing a **2D graphics/game engine** with my team  
-- Building a **Java-based Pac-Man style game**  
-- Improving my **Unity** and **cloud fundamentals**  
-- Studying **Java, C++, Python basics**, and computer architecture
+- Developing a **Turn-Base Top-Down Tank Game** with my team  
+- Improving my **Unity** and **cloud fundamentals**
+- Building a **Top-Down Shooter Game** using Unity  
+- Studying **Java, C++, C#, Python basics**, and computer architecture
 
 ---
 
