@@ -294,7 +294,6 @@ if (contactForm) {
     contactForm.querySelectorAll("input, textarea").forEach((field) => {
         field.addEventListener("blur", () => validateField(field));
     });
-}
 
 
 
