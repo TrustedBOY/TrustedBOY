@@ -1,0 +1,23 @@
+:root {
+    --bg: #0f0f0f;
+    --text: #ffffff;
+    --card-bg: #181818;
+    --shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.light-theme {
+    --bg: #f9f9f9;
+    --text: #000;
+    --card-bg: white;
+    --shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
+}
+
+.navbar a.active {
+    border-bottom: 2px solid #00ff99;
+}
