@@ -6,7 +6,7 @@
 ## 🔧 Skills & Technologies
 
 **Languages:**  
-C++, Java, Python, C#, JavaScript  
+C++, Java, Python, C#, JavaScript, HTML, CSS, C
 
 **Tools & Frameworks:**  
 Unity, SFML, Maven, Git, GitHub, VS Code, IntelliJ  
