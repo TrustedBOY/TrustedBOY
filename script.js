@@ -262,7 +262,7 @@ function validateField(field) {
 }
 
 // 3) Your Google Script URL
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz5kbqgRzwk634iACB-jN_mrqnvUE4KIfyFkl8EETijKA115tlTYCzndiq2OF9qbZcU/exec";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxkJRkicXehLo4y-3RwqEINnhhTSf2mwPaZMifwPx8/dev";
 
 // 4) Submit Handler
 if (contactForm) {
