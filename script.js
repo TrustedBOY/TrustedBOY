@@ -235,13 +235,15 @@ document.addEventListener("keydown", (e) => {
         closeModal();
     }
 });
+// ===============================
+// CONTACT FORM + VALIDATION + GOOGLE SCRIPT
+// ===============================
 
-// ===============================
-// CONTACT FORM (FAKE HANDLER + VALIDATION)
-// ===============================
+// 1) Variables (declare ONCE)
 const contactForm = document.getElementById("contact-form");
 const formStatus = document.getElementById("form-status");
 
+// 2) Validation function
 function validateField(field) {
     const errorSpan = field.parentElement.querySelector(".form-field__error");
     if (!field.value.trim()) {
@@ -259,49 +261,57 @@ function validateField(field) {
     return true;
 }
 
-
+// 3) Your Google Script URL
 const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwxjuz1iNmPhdkUxXjWk7mb1xqyV2fyeBuIDeO-UfPR9nN8SGVe_u_OUv3DcKwxlf8F/exec";
 
+// 4) Submit Handler
 if (contactForm) {
-  contactForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    contactForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const name = contactForm.name.value.trim();
-    const email = contactForm.email.value.trim();
-    const message = contactForm.message.value.trim();
+        const name = contactForm.name.value.trim();
+        const email = contactForm.email.value.trim();
+        const message = contactForm.message.value.trim();
 
-    // Frontend validation
-    if (!name || !email || !message) {
-      formStatus.textContent = "Please fill in all fields.";
-      return;
-    }
+        // Validation
+        if (!name || !email || !message) {
+            formStatus.textContent = "Please fill in all fields.";
+            return;
+        }
 
-    // Send to Google Apps Script
-    formStatus.textContent = "Sending...";
+        formStatus.textContent = "Sending...";
 
-    const payload = { name, email, message };
+        const payload = { name, email, message };
 
-    try {
-      const res = await fetch(WEBAPP_URL, {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" }
-      });
+        try {
+            const res = await fetch(WEBAPP_URL, {
+                method: "POST",
+                body: JSON.stringify(payload),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
 
-      const result = await res.json();
+            const result = await res.json();
 
-      if (result.status === "success") {
-        formStatus.textContent = "Message sent! TrustedBOY will reply soon.";
-        contactForm.reset();
-      } else {
-        formStatus.textContent = "Error sending message.";
-      }
+            if (result.status === "success") {
+                formStatus.textContent = "Message sent! TrustedBOY will reply soon.";
+                contactForm.reset();
+            } else {
+                formStatus.textContent = "Error sending message.";
+            }
 
-    } catch (error) {
-      formStatus.textContent = "Network error — try again later.";
-    }
-  });
+        } catch (error) {
+            formStatus.textContent = "Network error — try again later.";
+        }
+    });
+
+    // Field validation listeners
+    contactForm.querySelectorAll("input, textarea").forEach((field) => {
+        field.addEventListener("blur", () => validateField(field));
+    });
 }
+
 
 
 // ===============================
