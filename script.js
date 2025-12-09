@@ -266,45 +266,29 @@ const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbz5kbqgRzwk634iACB-j
 
 // 4) Submit Handler
 if (contactForm) {
-    contactForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+  contactForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        const name = contactForm.name.value.trim();
-        const email = contactForm.email.value.trim();
-        const message = contactForm.message.value.trim();
+    const formData = new FormData(contactForm);
 
-        // Validation
-        if (!name || !email || !message) {
-            formStatus.textContent = "Please fill in all fields.";
-            return;
-        }
+    formStatus.textContent = "Sending...";
 
-        formStatus.textContent = "Sending...";
+    try {
+      await fetch(WEBAPP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: formData
+      });
 
-        const payload = { name, email, message };
+      formStatus.textContent = "Message sent! TrustedBOY will reply soon.";
+      contactForm.reset();
 
-        try {
-            const res = await fetch(WEBAPP_URL, {
-                method: "POST",
-                body: JSON.stringify(payload),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
+    } catch (err) {
+      formStatus.textContent = "Network error — try again later.";
+    }
+  });
+}
 
-            const result = await res.json();
-
-            if (result.status === "success") {
-                formStatus.textContent = "Message sent! TrustedBOY will reply soon.";
-                contactForm.reset();
-            } else {
-                formStatus.textContent = "Error sending message.";
-            }
-
-        } catch (error) {
-            formStatus.textContent = "Network error — try again later.";
-        }
-    });
 
     // Field validation listeners
     contactForm.querySelectorAll("input, textarea").forEach((field) => {
