@@ -259,79 +259,50 @@ function validateField(field) {
     return true;
 }
 
+
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwxjuz1iNmPhdkUxXjWk7mb1xqyV2fyeBuIDeO-UfPR9nN8SGVe_u_OUv3DcKwxlf8F/exec";
+
 if (contactForm) {
-    contactForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const fields = [
-            contactForm.name,
-            contactForm.email,
-            contactForm.message
-        ];
-        let valid = true;
-        fields.forEach((f) => {
-            if (!validateField(f)) valid = false;
-        });
-        if (!valid) {
-            formStatus.textContent =
-                "Please fix the highlighted fields before sending.";
-            return;
-        }
+  contactForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        // Fake async submit (you can hook real backend/API later)
-        const contactForm = document.getElementById("contact-form");
-        const formStatus = document.getElementById("form-status");
+    const name = contactForm.name.value.trim();
+    const email = contactForm.email.value.trim();
+    const message = contactForm.message.value.trim();
 
-        const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwxjuz1iNmPhdkUxXjWk7mb1xqyV2fyeBuIDeO-UfPR9nN8SGVe_u_OUv3DcKwxlf8F/exec";
+    // Frontend validation
+    if (!name || !email || !message) {
+      formStatus.textContent = "Please fill in all fields.";
+      return;
+    }
 
-        if (contactForm) {
-            contactForm.addEventListener("submit", async (e) => {
-                e.preventDefault();
+    // Send to Google Apps Script
+    formStatus.textContent = "Sending...";
 
-                const name = contactForm.name.value.trim();
-                const email = contactForm.email.value.trim();
-                const message = contactForm.message.value.trim();
+    const payload = { name, email, message };
 
-                // Frontend validation
-                if (!name || !email || !message) {
-                    formStatus.textContent = "Please fill in all fields.";
-                    return;
-                }
+    try {
+      const res = await fetch(WEBAPP_URL, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" }
+      });
 
-                // Send to Google Apps Script
-                formStatus.textContent = "Sending...";
+      const result = await res.json();
 
-                const payload = { name, email, message };
+      if (result.status === "success") {
+        formStatus.textContent = "Message sent! TrustedBOY will reply soon.";
+        contactForm.reset();
+      } else {
+        formStatus.textContent = "Error sending message.";
+      }
 
-                try {
-                    const res = await fetch(WEBAPP_URL, {
-                        method: "POST",
-                        body: JSON.stringify(payload),
-                        headers: { "Content-Type": "application/json" }
-                    });
-
-                    const result = await res.json();
-
-                    if (result.status === "success") {
-                        formStatus.textContent = "Message sent! TrustedBOY will reply soon.";
-                        contactForm.reset();
-                    } else {
-                        formStatus.textContent = "Error sending message.";
-                    }
-
-                } catch (error) {
-                    formStatus.textContent = "Network error — try again later.";
-                }
-            });
-        }
-
-    });
-
-    contactForm
-        .querySelectorAll("input, textarea")
-        .forEach((field) =>
-            field.addEventListener("blur", () => validateField(field))
-        );
+    } catch (error) {
+      formStatus.textContent = "Network error — try again later.";
+    }
+  });
 }
+
 
 // ===============================
 // FOOTER YEAR
