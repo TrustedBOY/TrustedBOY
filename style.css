@@ -129,7 +129,8 @@ body {
   width: 32px;
   height: 32px;
   object-fit: contain;
-  border-radius: 6px; /* optional */
+  border-radius: 6px;
+  /* optional */
   display: block;
 }
 
@@ -522,6 +523,47 @@ body {
 }
 
 /* ===========================
+   LANGUAGES & FRAMEWORKS
+   =========================== */
+
+.languages__grid {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.4rem;
+}
+
+.lang-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 1.3rem 1.4rem;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--transition-med), box-shadow var(--transition-med);
+}
+
+.lang-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+.lang-card__title {
+  margin: 0 0 0.6rem;
+  font-size: 1.05rem;
+}
+
+.lang-card__list {
+  margin: 0;
+  padding-left: 1rem;
+  color: var(--color-text-muted);
+}
+
+.lang-card__list li {
+  margin: 0.25rem 0;
+}
+
+
+/* ===========================
    PROJECTS
    =========================== */
 
@@ -728,6 +770,47 @@ body.theme-light .form-field textarea {
 .reveal--visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* ===========================
+   SOCIAL LINKS
+   =========================== */
+
+.section__inner--center {
+  text-align: center;
+}
+
+.social-links {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.4rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background var(--transition-med), transform 0.1s;
+}
+
+.social-link img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.social-link:hover {
+  background: var(--color-accent-soft);
+  transform: translateY(-2px);
 }
 
 /* ===========================
