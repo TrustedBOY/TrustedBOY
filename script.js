@@ -278,12 +278,52 @@ if (contactForm) {
         }
 
         // Fake async submit (you can hook real backend/API later)
-        formStatus.textContent = "Sending...";
-        setTimeout(() => {
-            formStatus.textContent =
-                "Thanks for reaching out. TrustedBOY will get back to you soon.";
-            contactForm.reset();
-        }, 700);
+        const contactForm = document.getElementById("contact-form");
+        const formStatus = document.getElementById("form-status");
+
+        const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwxjuz1iNmPhdkUxXjWk7mb1xqyV2fyeBuIDeO-UfPR9nN8SGVe_u_OUv3DcKwxlf8F/exec";
+
+        if (contactForm) {
+            contactForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const name = contactForm.name.value.trim();
+                const email = contactForm.email.value.trim();
+                const message = contactForm.message.value.trim();
+
+                // Frontend validation
+                if (!name || !email || !message) {
+                    formStatus.textContent = "Please fill in all fields.";
+                    return;
+                }
+
+                // Send to Google Apps Script
+                formStatus.textContent = "Sending...";
+
+                const payload = { name, email, message };
+
+                try {
+                    const res = await fetch(WEBAPP_URL, {
+                        method: "POST",
+                        body: JSON.stringify(payload),
+                        headers: { "Content-Type": "application/json" }
+                    });
+
+                    const result = await res.json();
+
+                    if (result.status === "success") {
+                        formStatus.textContent = "Message sent! TrustedBOY will reply soon.";
+                        contactForm.reset();
+                    } else {
+                        formStatus.textContent = "Error sending message.";
+                    }
+
+                } catch (error) {
+                    formStatus.textContent = "Network error — try again later.";
+                }
+            });
+        }
+
     });
 
     contactForm
