@@ -276,7 +276,7 @@ if (contactForm) {
 
     try {
       await fetch(WEBAPP_URL, {
-        method: "doPOST",
+        method: "POST",
         mode: "no-cors",
         body: formData
       });
@@ -285,7 +285,7 @@ if (contactForm) {
       contactForm.reset();
 
     } catch (err) {
-      formStatus.textContent = "Network error — try again later.";
+      formStatus.textContent = "Network error — try again later." + err.message;
     }
   });
 }
