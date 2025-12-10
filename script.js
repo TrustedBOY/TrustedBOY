@@ -236,66 +236,44 @@ document.addEventListener("keydown", (e) => {
     }
 });
 // ===============================
-// CONTACT FORM + VALIDATION + GOOGLE SCRIPT
+// CONTACT FORM + VALIDATION + FORMSPREE
 // ===============================
 
-// 1) Variables (declare ONCE)
 const contactForm = document.getElementById("contact-form");
 const formStatus = document.getElementById("form-status");
 
-// 2) Validation function
-function validateField(field) {
-    const errorSpan = field.parentElement.querySelector(".form-field__error");
-    if (!field.value.trim()) {
-        errorSpan.textContent = "This field is required.";
-        return false;
-    }
-    if (field.type === "email") {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(field.value.trim())) {
-            errorSpan.textContent = "Please enter a valid email.";
-            return false;
-        }
-    }
-    errorSpan.textContent = "";
-    return true;
-}
-
-// 3) Your Google Script URL
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxCKl0TI8zeGU6KmWOEcRFeoYj6YOilG0vp4DzRWrDfGQDj1Askm6-pwTIsxAqWIFjs/exec";
-
-
-// 4) Submit Handler
 if (contactForm) {
   contactForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(contactForm);
+    // Validate fields
+    const isValid = [...contactForm.elements].every((field) =>
+      field.type !== "submit" ? validateField(field) : true
+    );
+    if (!isValid) return;
 
     formStatus.textContent = "Sending...";
 
     try {
-      await fetch(WEBAPP_URL, {
+      const response = await fetch(contactForm.action, {
         method: "POST",
-        mode: "no-cors",
-        body: formData
+        body: new FormData(contactForm),
+        headers: { Accept: "application/json" }
       });
 
-      formStatus.textContent = "Message sent! TrustedBOY will reply soon.";
-      contactForm.reset();
-
-    } catch (err) {
-      formStatus.textContent = "Network error — try again later." + err.message;
+      if (response.ok) {
+        formStatus.textContent = "Message sent! I'll get back to you soon.";
+        contactForm.reset();
+      } else {
+        formStatus.textContent =
+          "Oops! Something went wrong. Please try again later.";
+      }
+    } catch (error) {
+      formStatus.textContent =
+        "Network error. Please check your connection.";
     }
   });
 }
-
-
-    // Field validation listeners
-    contactForm.querySelectorAll("input, textarea").forEach((field) => {
-        field.addEventListener("blur", () => validateField(field));
-    });
-
 
 
 // ===============================
