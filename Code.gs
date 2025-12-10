@@ -9,14 +9,14 @@ function doPost(e) {
   var email = e.parameter.email;
   var message = e.parameter.message;
 
-  var recipient = "amirsaebi.05@gmail.com";
+  var recipient = "amirhoseinsaebi.83@gmail.com";
   var subject = "New Message from TrustedBOY Website";
 
   var body =
     "Name: " + name + "\n" +
-    "Email: " + email + "\n" +
+    "Email: " + email + "\n\n" +
     "Message: " + message + "\n\n" +
-    "Sent at: " + new Date() + "\n\n\n\n" +
+    "Sent at: " + new Date() + "\n\n\n" +
     "#contact_handler";
 
   GmailApp.sendEmail(recipient, subject, body);
