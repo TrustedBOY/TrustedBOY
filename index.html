@@ -290,8 +290,7 @@
                     </p>
                 </div>
                 <div class="section__body reveal">
-                    <form class="contact-form" id="contact-form" action="https://formspree.io/f/mldqplyy"
-                        method="POST">
+                    <form class="contact-form" id="contact-form" novalidate>
                         <div class="form-field">
                             <label for="name">Name</label>
                             <input type="text" id="name" name="name" placeholder="Your name" required />
@@ -314,7 +313,6 @@
                         <button type="submit" class="btn btn--primary">Send Message</button>
                         <p class="form__status" id="form-status" aria-live="polite"></p>
                     </form>
-
                 </div>
             </div>
         </section>
@@ -359,8 +357,7 @@
         </div>
     </footer>
 
-    <script src="script.js?v=2"></script>
-
+    <script src="script.js"></script>
 </body>
 
 </html>
