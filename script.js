@@ -276,7 +276,7 @@ if (contactForm) {
 
     try {
       await fetch(WEBAPP_URL, {
-        method: "POST",
+        method: "doPOST",
         mode: "no-cors",
         body: formData
       });
