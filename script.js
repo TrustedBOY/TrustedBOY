@@ -192,7 +192,14 @@ const projectDetails = {
         title: "Tumble Bird — Unity 2D Game",
         body:
             "A responsive, physics-based side-scroller similar to Flappy Bird. Features player input handling, obstacle spawning, scoring, animation, and a polished gameplay loop. My first step into real-time game development in Unity."
+    },
+
+    tanksgame: {
+        title: "Tanks Game — C++ & SFML",
+        body:
+            "A 2D top-down turn-based tank game developed in C++ using SFML. Players control tanks, navigate terrain, and engage in strategic combat. The game features both single-player and local multiplayer modes."
     }
+
 };
 
 const modal = document.getElementById("project-modal");

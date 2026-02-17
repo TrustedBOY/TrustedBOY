@@ -3,6 +3,41 @@
    =========================== */
 
 :root {
+  --color-bg: radial-gradient(circle at top, #173f1b 0, #061105 45%, #02010b);
+  --color-bg-alt: #0d1a0b;
+  --color-surface: #112110;
+  --color-border: #253b25;
+  --color-text: #f7f7ff;
+  --color-text-muted: #a4a8c0;
+  --color-accent: #53d14f;
+  --color-accent-soft: rgba(79, 209, 96, 0.12);
+  --color-danger: #f56565;
+
+  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.5);
+  --radius-lg: 18px;
+  --radius-md: 10px;
+  --radius-pill: 999px;
+
+  --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Roboto", "Segoe UI", sans-serif;
+
+  --transition-fast: 0.18s ease-out;
+  --transition-med: 0.25s ease-out;
+}
+
+body.theme-light {
+  --color-bg: #eaffe9;
+  --color-bg-alt: #ddf8e377;
+  --color-surface: #ffffff;
+  --color-border: #d4d7e5;
+  --color-text: #1a1a1a;
+  --color-text-muted: #80839a;
+  --color-accent: #2ece29;
+  /* same accent */
+}
+
+/* 
+:root {
   --color-bg: radial-gradient(circle at top, #181c36 0, #050711 45%, #02010b);
   --color-bg-alt: #0b0e1a;
   --color-surface: #101321;
@@ -33,9 +68,7 @@ body.theme-light {
   --color-text: #1a1a1a;
   --color-text-muted: #80839a;
   --color-accent: #4fd1c5;
-  /* same accent */
-}
-
+} */
 
 *,
 *::before,
@@ -105,8 +138,8 @@ body {
   top: 0;
   backdrop-filter: blur(18px);
   background: linear-gradient(to bottom,
-      rgba(5, 7, 17, 0.95),
-      rgba(5, 7, 17, 0.75),
+      rgba(5, 17, 5, 0.95),
+      rgba(5, 17, 6, 0.75),
       transparent);
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
@@ -143,8 +176,8 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 0.85rem;
-  background: radial-gradient(circle at 10% 0, #4fd1c5, #805ad5);
-  color: #050711;
+  background: radial-gradient(circle at 10% 0, #65d14f, #805ad5);
+  color: #051105;
   font-weight: 700;
 }
 
@@ -303,13 +336,13 @@ body {
 }
 
 .btn--primary {
-  background: linear-gradient(135deg, #4fd1c5, #805ad5);
-  color: #050711;
-  box-shadow: 0 14px 30px rgba(79, 209, 197, 0.35);
+  background: linear-gradient(135deg, #5ed14f, #49e0c0);
+  color: #051106;
+  box-shadow: 0 14px 30px rgba(101, 209, 79, 0.35);
 }
 
 .btn--primary:hover {
-  box-shadow: 0 18px 40px rgba(79, 209, 197, 0.45);
+  box-shadow: 0 18px 40px rgba(101, 209, 79, 0.35);
   transform: translateY(-1px);
 }
 
@@ -343,7 +376,7 @@ body {
   content: "";
   position: absolute;
   inset: -80%;
-  background: radial-gradient(circle at top, rgba(79, 209, 197, 0.12), transparent 60%);
+  background: radial-gradient(circle at top, rgba(83, 209, 79, 0.12), transparent 60%);
   opacity: 0.8;
   pointer-events: none;
 }
