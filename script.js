@@ -1,314 +1,166 @@
-// ===============================
-// THEME TOGGLE
-// ===============================
-const body = document.body;
-const themeToggleBtn = document.querySelector(".theme-toggle");
-const themeIcon = document.querySelector(".theme-toggle__icon");
+const input = document.getElementById("input");
+const output = document.getElementById("output");
+const tabHelp = document.getElementById("tab-help");
 
-function setTheme(theme) {
-    if (theme === "light") {
-        body.classList.add("theme-light");
-        themeIcon.textContent = "🌙";
-    } else {
-        body.classList.remove("theme-light");
-        themeIcon.textContent = "☀";
-    }
-    localStorage.setItem("trustedboy-theme", theme);
-}
+const WHITE = "white";
+const GREEN = "#00ff88";
+const USERNAME = "amirsaebi@portfolio:~$ ";
 
-(function initTheme() {
-    const saved = localStorage.getItem("trustedboy-theme");
-    const prefersLight = window.matchMedia("(prefers-color-scheme: light)")
-        .matches;
-    if (saved) {
-        setTheme(saved);
-    } else if (prefersLight) {
-        setTheme("light");
-    } else {
-        setTheme("dark");
-    }
-})();
-
-themeToggleBtn.addEventListener("click", () => {
-    const current = body.classList.contains("theme-light") ? "light" : "dark";
-    setTheme(current === "light" ? "dark" : "light");
-});
-
-// ===============================
-// NAV: SMOOTH SCROLL + MOBILE TOGGLE
-// ===============================
-const navLinks = document.querySelectorAll(".nav__link");
-const navLinksContainer = document.querySelector(".nav__links");
-const navToggle = document.querySelector(".nav__toggle");
-
-navLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-        const href = link.getAttribute("href");
-        if (!href || !href.startsWith("#")) return;
-        e.preventDefault();
-
-        const target = document.querySelector(href);
-        if (target) {
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
+const commands = {
+    help: {
+        description: "show commands",
+        run(entry) {
+            appendOutputLines(entry, buildHelpLines());
         }
-
-        // Close mobile nav after click
-        navLinksContainer.classList.remove("nav__links--open");
-    });
-});
-
-navToggle.addEventListener("click", () => {
-    navLinksContainer.classList.toggle("nav__links--open");
-});
-
-// ===============================
-// HERO TYPEWRITER
-// ===============================
-const typedElement = document.getElementById("hero-typed-text");
-const roles = [
-    "games come alive.",
-    "code becomes clarity.",
-    "ideas evolve into systems.",
-    "curiosity drives everything."
-];
-
-
-
-let roleIndex = 0;
-let charIndex = 0;
-let isDeleting = false;
-
-function typeLoop() {
-    const current = roles[roleIndex];
-    if (!isDeleting) {
-        charIndex++;
-        typedElement.textContent = current.slice(0, charIndex);
-        if (charIndex === current.length) {
-            setTimeout(() => (isDeleting = true), 1100);
-        }
-    } else {
-        charIndex--;
-        typedElement.textContent = current.slice(0, charIndex);
-        if (charIndex === 0) {
-            isDeleting = false;
-            roleIndex = (roleIndex + 1) % roles.length;
-        }
-    }
-
-    const baseSpeed = 80;
-    const delay = isDeleting ? baseSpeed / 1.4 : baseSpeed;
-    setTimeout(typeLoop, delay);
-}
-
-if (typedElement) {
-    typeLoop();
-}
-
-// ===============================
-// REVEAL ON SCROLL
-// ===============================
-const revealElements = document.querySelectorAll(".reveal");
-
-if ("IntersectionObserver" in window) {
-    const observer = new IntersectionObserver(
-        (entries, obs) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("reveal--visible");
-                    obs.unobserve(entry.target);
-                }
-            });
-        },
-        {
-            threshold: 0.18
-        }
-    );
-
-    revealElements.forEach((el) => observer.observe(el));
-} else {
-    // Fallback: just show everything
-    revealElements.forEach((el) => el.classList.add("reveal--visible"));
-}
-
-// ===============================
-// SKILLS: FILTER + ANIMATE METERS
-// ===============================
-const skillChips = document.querySelectorAll("[data-skill-filter]");
-const skillCards = document.querySelectorAll(".skill-card");
-
-skillChips.forEach((chip) => {
-    chip.addEventListener("click", () => {
-        const filter = chip.dataset.skillFilter;
-        skillChips.forEach((c) => c.classList.remove("chip--active"));
-        chip.classList.add("chip--active");
-
-        skillCards.forEach((card) => {
-            const category = card.dataset.skillCategory;
-            const shouldShow = filter === "all" || category === filter;
-            card.style.display = shouldShow ? "block" : "none";
-        });
-    });
-});
-
-// Animate meters once they come into view
-const skillFills = document.querySelectorAll(".skill-card__meter-fill");
-
-if ("IntersectionObserver" in window) {
-    const meterObserver = new IntersectionObserver(
-        (entries, obs) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    const el = entry.target;
-                    const level = el.dataset.skillLevel || 60;
-                    el.style.width = `${level}%`;
-                    obs.unobserve(el);
-                }
-            });
-        },
-        {
-            threshold: 0.5
-        }
-    );
-
-    skillFills.forEach((fill) => meterObserver.observe(fill));
-} else {
-    skillFills.forEach((fill) => {
-        const level = fill.dataset.skillLevel || 60;
-        fill.style.width = `${level}%`;
-    });
-}
-
-// ===============================
-// PROJECT MODAL
-// ===============================
-const projectDetails = {
-    triangulation: {
-        title: "Java Triangulation Program",
-        body:
-            "A computational geometry project written in Java. It can generate points, build polygons, execute triangulation algorithms, and render the output using custom PNG and model writers. Designed to explore geometry, algorithm design, and clean object-oriented structure."
     },
-
-    tumblebird: {
-        title: "Tumble Bird — Unity 2D Game",
-        body:
-            "A responsive, physics-based side-scroller similar to Flappy Bird. Features player input handling, obstacle spawning, scoring, animation, and a polished gameplay loop. My first step into real-time game development in Unity."
+    about: {
+        description: "about me",
+        run(entry) {
+            appendOutputLines(entry, [
+                "Name: Amir",
+                "Role: Computer Engineering Student",
+                "Focus: Game Development",
+                "Stack: Java, JavaScript, Unity (learning)"
+            ]);
+        }
     },
+    projects: {
+        description: "list of experiences",
+        run(entry) {
+            appendOutputLines(entry, [
+                "1: TumbleBird | Unity (C#)",
+                "2: Tanks Game | C++ & SFML",
+                "3: Triangulation Program | Java"
+            ]);
+        }
+    },
+    skills: {
+        description: "what i've learnt in the past few years",
+        run(entry) {
+            appendOutputLines(entry, [
+                "Languages: Java, C#, C++, Python, HTML, JavaScript",
+                "Frameworks & Engines: Unity ,SFML ,Java AWT/Swing",
+                "Development tools: Git, Unity, Linux Environment"
+            ])
+        }
+    },
+    hi: {
+        description: "",
+        run(entry) {
+            appendOutputLines(entry, [
+                "Hello my friend"
+            ]);
+        }
 
-    tanksgame: {
-        title: "Tanks Game — C++ & SFML",
-        body:
-            "A 2D top-down turn-based tank game developed in C++ using SFML. Players control tanks, navigate terrain, and engage in strategic combat. The game features both single-player and local multiplayer modes."
+    },
+    clear: {
+        description: "clear terminal",
+        run() {
+            output.innerHTML = "";
+        }
     }
-
 };
 
-const modal = document.getElementById("project-modal");
-const modalTitle = document.getElementById("modal-title");
-const modalBody = document.getElementById("modal-body");
-const modalCloseEls = document.querySelectorAll("[data-modal-close]");
+let history = [];
+let historyIndex = -1;
 
-function openModal(id) {
-    const detail = projectDetails[id];
-    if (!detail) return;
-    modalTitle.textContent = detail.title;
-    modalBody.textContent = detail.body;
-    modal.classList.add("modal--open");
-}
+printSystemMessage("Booting portfolio...");
+setTimeout(() => printSystemMessage("Type 'help' to see commands\n\n"), 500);
+renderTabHelp();
 
-function closeModal() {
-    modal.classList.remove("modal--open");
-}
-
-document.querySelectorAll(".project-card__btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-        const id = btn.closest(".project-card").dataset.projectId;
-        openModal(id);
-
-    });
-});
-
-modalCloseEls.forEach((el) => {
-    el.addEventListener("click", closeModal);
-});
-
-modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-        closeModal();
+input.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") {
+        e.preventDefault();
+        toggleTabHelp();
+        return;
     }
-});
 
-document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("modal--open")) {
-        closeModal();
+    if (e.key === "Escape") {
+        hideTabHelp();
+        return;
     }
-});
-// ===============================
-// CONTACT FORM + VALIDATION + GOOGLE SCRIPT
-// ===============================
 
-// 1) Variables (declare ONCE)
-const contactForm = document.getElementById("contact-form");
-const formStatus = document.getElementById("form-status");
+    if (e.key === "Enter") {
+        e.preventDefault();
+        hideTabHelp();
 
-// 2) Validation function
-function validateField(field) {
-    const errorSpan = field.parentElement.querySelector(".form-field__error");
-    if (!field.value.trim()) {
-        errorSpan.textContent = "This field is required.";
-        return false;
-    }
-    if (field.type === "email") {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(field.value.trim())) {
-            errorSpan.textContent = "Please enter a valid email.";
-            return false;
+        const cmd = input.value.trim();
+        if (cmd !== "") {
+            history.push(cmd);
+            historyIndex = history.length;
+            runCommand(cmd);
         }
+        input.value = "";
     }
-    errorSpan.textContent = "";
-    return true;
+});
+
+function runCommand(rawCmd) {
+    const commandName = rawCmd.toLowerCase();
+    const entry = createHistoryEntry(rawCmd);
+    const command = commands[commandName];
+
+    if (!command) {
+        appendOutputLines(entry, ["Command not found. Type 'help'"]);
+        return;
+    }
+
+    command.run(entry);
 }
 
-// 3) Your Google Script URL
-// const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxCKl0TI8zeGU6KmWOEcRFeoYj6YOilG0vp4DzRWrDfGQDj1Askm6-pwTIsxAqWIFjs/exec";
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyD3wqJNTVsZYcw6KYB5rf5hqa0s75PLq6Js6ktbNBwcHhTzkDcdcm8YE8hCqWoNaDX/exec";
-
-// 4) Submit Handler
-if (contactForm) {
-  contactForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(contactForm);
-
-    formStatus.textContent = "Sending...";
-
-    try {
-      await fetch(WEBAPP_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body: formData
-      });
-
-      formStatus.textContent = "Message sent! TrustedBOY will reply soon.";
-      contactForm.reset();
-
-    } catch (err) {
-      formStatus.textContent = "Network error — try again later." + err.message;
-    }
-  });
-}
-
-
-    // Field validation listeners
-    contactForm.querySelectorAll("input, textarea").forEach((field) => {
-        field.addEventListener("blur", () => validateField(field));
+function buildHelpLines() {
+    const lines = ["Available commands:"];
+    Object.entries(commands).forEach(([name, command]) => {
+        lines.push(`${name.padEnd(8, " ")} - ${command.description}`);
     });
+    return lines;
+}
 
+function createHistoryEntry(command) {
+    const entry = document.createElement("div");
+    entry.className = "history-entry";
 
+    const commandLine = document.createElement("div");
+    commandLine.className = "history-command";
 
-// ===============================
-// FOOTER YEAR
-// ===============================
-const footerYear = document.getElementById("footer-year");
-if (footerYear) {
-    footerYear.textContent = new Date().getFullYear();
+    const prompt = document.createElement("span");
+    prompt.className = "username";
+    prompt.style.color = GREEN;
+    prompt.textContent = USERNAME;
+
+    const commandText = document.createElement("span");
+    commandText.style.color = WHITE;
+    commandText.textContent = command;
+
+    commandLine.append(prompt, commandText);
+    entry.appendChild(commandLine);
+    output.appendChild(entry);
+    return entry;
+}
+
+function appendOutputLines(entry, lines) {
+    lines.forEach((lineText) => {
+        const line = document.createElement("div");
+        line.className = "history-output";
+        line.textContent = lineText;
+        entry.appendChild(line);
+    });
+}
+
+function printSystemMessage(text) {
+    const line = document.createElement("div");
+    line.style.color = WHITE;
+    line.textContent = text;
+    output.appendChild(line);
+}
+
+function renderTabHelp() {
+    tabHelp.textContent = buildHelpLines().join("\n");
+}
+
+function toggleTabHelp() {
+    tabHelp.hidden = !tabHelp.hidden;
+}
+
+function hideTabHelp() {
+    tabHelp.hidden = true;
 }
