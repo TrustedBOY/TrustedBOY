@@ -48,7 +48,7 @@ const styles = {
     },
     suggestionsField: {
         color: '#7A7A7A',
-        paddingLeft: '328px', // Aligns the options roughly under where the text starts
+        paddingLeft: '200px', // Aligns the options roughly under where the text starts
         fontFamily: 'monospace',
         fontSize: '16px',
         marginTop: '4px',
