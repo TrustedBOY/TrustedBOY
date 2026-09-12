@@ -60,13 +60,13 @@ const projects = [
         id: 1,
         name: 'TumbleBird',
         brief: 'Physics-based arcade game.',
-        url: 'https://github.com/amirsaebi/tumblebird',
+        url: 'https://github.com/TrustedBOY/Tumble-Bird',
     },
     {
         id: 2,
         name: 'Tanks Game',
         brief: '2D tank combat built with SFML.',
-        url: 'https://github.com/amirsaebi/tanks',
+        url: 'https://github.com/TrustedBOY/TankGame',
     },
     {
         id: 3,
