@@ -10,10 +10,18 @@ const styles = {
         fontFamily: 'monospace',
         textAlign: 'left',
     },
+    asciiArt: {
+        color: '#00ff88',
+        fontFamily: 'monospace',
+        fontSize: '12px',
+        lineHeight: '14px',
+        whiteSpace: 'pre',
+        margin: '30px 0 50px 0px',
+    },
     header: {
         color: '#00ff88',
         fontSize: '52px',
-        margin: '0 0 20px 0',
+        margin: '0 0 20px o',
     },
     row: {
         display: 'flex',
@@ -52,8 +60,63 @@ const styles = {
         fontFamily: 'monospace',
         fontSize: '16px',
         marginTop: '4px',
+        whiteSpace: 'pre', // add this
     },
 };
+
+const asciiArtAmirSaebi = `
+ █████╗ ███╗   ███╗██╗██████╗     ███████╗ █████╗ ███████╗██████╗ ██╗
+██╔══██╗████╗ ████║██║██╔══██╗    ██╔════╝██╔══██╗██╔════╝██╔══██╗██║
+███████║██╔████╔██║██║██████╔╝    ███████╗███████║█████╗  ██████╔╝██║
+██╔══██║██║╚██╔╝██║██║██╔══██╗    ╚════██║██╔══██║██╔══╝  ██╔══██╗██║
+██║  ██║██║ ╚═╝ ██║██║██║  ██║    ███████║██║  ██║███████╗██████╔╝██║
+╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚═════╝ ╚═╝
+`;
+
+const asciiArtTrustedBOY = `
+████████╗██████╗ ██╗   ██╗███████╗████████╗███████╗██████╗ ██████╗  ██████╗ ██╗   ██╗
+╚══██╔══╝██╔══██╗██║   ██║██╔════╝╚══██╔══╝██╔════╝██╔══██╗██╔══██╗██╔═══██╗╚██╗ ██╔╝
+   ██║   ██████╔╝██║   ██║███████╗   ██║   █████╗  ██║  ██║██████╔╝██║   ██║ ╚████╔╝ 
+   ██║   ██╔══██╗██║   ██║╚════██║   ██║   ██╔══╝  ██║  ██║██╔══██╗██║   ██║  ╚██╔╝  
+   ██║   ██║  ██║╚██████╔╝███████║   ██║   ███████╗██████╔╝██████╔╝╚██████╔╝   ██║   
+   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═════╝ ╚═════╝  ╚═════╝    ╚═╝   
+`;
+
+const styleTag = document.createElement('style');
+styleTag.textContent = `
+@keyframes flicker {
+    0%   { opacity: 1; }
+    45%  { opacity: 1; }
+    48%  { opacity: 0.2; }
+    50%  { opacity: 0.8; }
+    52%  { opacity: 0.1; }
+    55%  { opacity: 1; }
+    100% { opacity: 1; }
+}
+.art-flicker {
+    animation: flicker 0.4s linear;
+}
+`;
+document.head.appendChild(styleTag);
+
+
+const asciiArts = [asciiArtAmirSaebi, asciiArtTrustedBOY];
+let artIndex = 0;
+
+function startArtCycle() {
+    setInterval(() => {
+        artIndex = (artIndex + 1) % asciiArts.length;
+        const artEl = root.querySelector('.ascii-art');
+        if (!artEl) return;
+
+        artEl.textContent = asciiArts[artIndex];
+
+        // restart the flicker animation each swap
+        artEl.classList.remove('art-flicker');
+        void artEl.offsetWidth; // force reflow so the animation re-triggers
+        artEl.classList.add('art-flicker');
+    }, 3000); // swap every 3 seconds
+}
 
 const projects = [
     {
@@ -109,7 +172,10 @@ const commands = {
         run(args) {
             return [
                 {
-                    text: 'Name: Amir\nRole: Computer Engineering Student\nStack: Java, C#, C++, JS',
+                    text:
+                        `Name: Amir Saebi
+Role: Computer Engineering Student
+Stack: Java, C#, C++, JS`,
                     type: 'output',
                 },
             ];
@@ -120,13 +186,32 @@ const commands = {
         description: 'List portfolio projects',
         run(args) {
             return projects.map((p) => ({
-                text: `${p.id}. ${p.name} - ${p.brief}`,
+                text: `ID${p.id} | ${p.name} | ${p.brief}`,
                 type: p.url ? 'link' : 'output',
                 url: p.url || null,
             }));
         },
     },
 
+    project: {
+        description: 'Show informations about a project. Usage: project [project id]',
+        run(args) {
+            if (args.length !== 1) {
+                return [
+                    {
+                        text: 'Usage: project [project id]',
+                        type: 'error',
+                    },
+                ];
+            }
+
+            const targetID = args[0];
+            const project = projects.find(item => item.id === targetID);
+
+            console.log(project);
+
+        }
+    },
     contact: {
         description: 'Show my contact information',
         run(args) {
@@ -140,7 +225,7 @@ const commands = {
 
     calc: {
         description:
-            'Calculate simple math operations. Usage: calc [num1] [operator] [num2]',
+            'Calculate simple math operations. Usage: calc [operator] [num1] [num2]',
         run(args) {
             if (args.length !== 3) {
                 return [
@@ -151,9 +236,10 @@ const commands = {
                 ];
             }
 
-            const num1 = parseFloat(args[0]);
-            const num2 = parseFloat(args[1]);
-            const operator = args[2];
+            const operator = args[0];
+            const num1 = parseFloat(args[1]);
+            const num2 = parseFloat(args[2]);
+
 
             if (isNaN(num1) || isNaN(num2)) {
                 return [
@@ -217,16 +303,21 @@ function handleKeyDown(event) {
         event.preventDefault();
         suggestions = [];
 
-        const trimmedInpout = inputValue.trim().toLowerCase();
-        // if (trimmedInpout === '') {return;}
+        const trimmedInput = inputValue.trim().toLowerCase();
+        // if (trimmedInput === '') {return;}
 
-        const availableCommands = [...Object.keys(commands), 'clear'];
+        const availableCommands = [...Object.entries(commands).map(([name, cmd]) => ({
+            name,
+            description: cmd.description || '',
+        })),
+        { name: 'clear', description: 'Clear terminal history' },
+        ];
         const matches = availableCommands.filter((cmd) =>
-            cmd.startsWith(trimmedInpout)
+            cmd.name.startsWith(trimmedInput)
         );
 
         if (matches.length === 1) {
-            inputValue = matches[0] + ' ';
+            inputValue = matches[0].name + ' ';
             suggestions = [];
         } else if (matches.length > 1) {
             suggestions = matches;
@@ -287,6 +378,12 @@ function render() {
 
     const container = document.createElement('div');
     applyStyles(container, styles.container);
+
+    const art = document.createElement('pre');
+    applyStyles(art, styles.asciiArt);
+    art.className = 'ascii-art';
+    art.textContent = asciiArts[artIndex];
+    container.appendChild(art);
 
     const header = document.createElement('h1');
     applyStyles(header, styles.header);
@@ -366,9 +463,9 @@ function render() {
         applyStyles(suggestionsRow, styles.suggestionsField);
 
         suggestions.forEach((match) => {
-            const line = document.createElement('div'); // div instead of span → each one is its own line
+            const line = document.createElement('div');
             // applyStyles(line, { fontFamily: 'monospace'});
-            line.textContent = match;
+            line.textContent = match.description ? `${match.name.padEnd(10)} - ${match.description}` : match.name;
             suggestionsRow.appendChild(line);
         });
 
@@ -392,5 +489,5 @@ function render() {
         liveInput.selectionStart = liveInput.selectionEnd = liveInput.value.length;
     }
 }
-
 render();
+startArtCycle();
