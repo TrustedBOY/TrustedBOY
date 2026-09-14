@@ -12,12 +12,12 @@ const styles = {
     },
     asciiArt: {
         color: '#00ff88',
-        fontFamily: 'monospace',
-        fontSize: 'clamp(4px, 2vw, 12px)', // shrinks on narrow viewports, caps at 12px on desktop
+        fontFamily: '"Cascadia Mono", "DejaVu Sans Mono", "Courier New", monospace',
+        fontSize: 'clamp(4px, 2vw, 12px)',
         lineHeight: '1.15',
         whiteSpace: 'pre',
-        margin: '30px 0 50px 0px',
-        overflowx: 'auto',
+        margin: '30px 0 50px 0',
+        overflowX: 'auto',
     },
     header: {
         color: '#00ff88',
