@@ -61,6 +61,7 @@ const styles = {
         fontFamily: 'monospace',
         fontSize: '16px',
         marginTop: '4px',
+        margonBottom: '50px',
         whiteSpace: 'pre', // add this
     },
 };
@@ -100,7 +101,6 @@ styleTag.textContent = `
 `;
 document.head.appendChild(styleTag);
 
-
 const asciiArts = [asciiArtAmirSaebi, asciiArtTrustedBOY];
 let artIndex = 0;
 
@@ -116,7 +116,7 @@ function startArtCycle() {
         artEl.classList.remove('art-flicker');
         void artEl.offsetWidth; // force reflow so the animation re-triggers
         artEl.classList.add('art-flicker');
-    }, 3000); // swap every 3 seconds
+    }, 5000); // swap every 5 seconds
 }
 
 const projects = [
@@ -174,13 +174,13 @@ const commands = {
             return [
                 {
                     text:
-                        `Name: Amir Saebi
-Role: Computer Engineering Student @ AYBU
-Location: Ankara, Turkey
-Stack: Java, C#, C++, JS
-Focus: OOP, data structures, computer architecture
-Currently exploring: game dev (Unity), MySQL, AI
-Philosophy: build it from scratch before reaching for a library`,
+                        `   Name: Amir Saebi
+    Role: Computer Engineering Student @ AYBU
+     Location: Ankara, Turkey
+      Stack: Java, C#, C++, JS, Python
+       Focus: OOP, data structures, Game Development
+        Currently exploring: game dev (Unreal Engine and Unity)
+         Philosophy: build it from scratch before reaching for a library`,
                     type: 'output',
                 },
             ];
@@ -191,7 +191,7 @@ Philosophy: build it from scratch before reaching for a library`,
         description: 'List portfolio projects',
         run(args) {
             return projects.map((p) => ({
-                text: `ID${p.id} | ${p.name} | ${p.brief}`,
+                text: `id ${p.id} | ${p.name} | ${p.brief}`,
                 type: p.url ? 'link' : 'output',
                 url: p.url || null,
             }));
@@ -288,10 +288,14 @@ Philosophy: build it from scratch before reaching for a library`,
 // ----- state (plain variables instead of useState, since there's no React here) -----
 let inputValue = '';
 let history = [];
-let suggestions = [];
+let suggestions = getMatches('');
 
 // grab the root element we'll render everything into
 const root = document.getElementById('root');
+
+// persistent references to the "static" parts of the page,
+// created once and never torn down again
+let dynamicWrapper = null;
 
 function applyStyles(el, styleObj) {
     Object.assign(el.style, styleObj);
@@ -299,41 +303,33 @@ function applyStyles(el, styleObj) {
 
 function handleInputChange(event) {
     inputValue = event.target.value;
-    suggestions = [];
-    render();
-}
 
+    const trimmedInput = inputValue.trim().toLowerCase();
+    suggestions = getMatches(trimmedInput);
+
+    renderDynamic();
+}
 function handleKeyDown(event) {
     if (event.key == 'Tab') {
         event.preventDefault();
-        suggestions = [];
 
         const trimmedInput = inputValue.trim().toLowerCase();
-        // if (trimmedInput === '') {return;}
-
-        const availableCommands = [...Object.entries(commands).map(([name, cmd]) => ({
-            name,
-            description: cmd.description || '',
-        })),
-        { name: 'clear', description: 'Clear terminal history' },
-        ];
-        const matches = availableCommands.filter((cmd) =>
-            cmd.name.startsWith(trimmedInput)
-        );
+        const matches = getMatches(trimmedInput);
 
         if (matches.length === 1) {
             inputValue = matches[0].name + ' ';
             suggestions = [];
         } else if (matches.length > 1) {
-            suggestions = matches;
+            suggestions = matches; // already showing, but keep it explicit
         }
-        render();
+
+        renderDynamic();
         return;
     }
 
     if (event.key == 'Enter') {
         event.preventDefault();
-        suggestions = [];
+        suggestions = getMatches('');
 
         const trimmedInput = inputValue.trim();
         if (trimmedInput === '') return;
@@ -342,7 +338,7 @@ function handleKeyDown(event) {
         if (trimmedInput.toLowerCase() === 'clear') {
             history = [];
             inputValue = '';
-            render();
+            renderDynamic();
             return;
         }
 
@@ -373,12 +369,30 @@ function handleKeyDown(event) {
 
         history = newLines;
         inputValue = '';
-        render();
+        renderDynamic();
     }
 }
+function getMatches(trimmedInput) {
+    const availableCommands = [
+        ...Object.entries(commands).map(([name, cmd]) => ({
+            name,
+            description: cmd.description || '',
+        })),
+        { name: 'clear', description: 'Clear terminal history' },
+    ];
 
-// builds the whole page fresh every time state changes, same idea as a React re-render
-function render() {
+    return availableCommands.filter((cmd) =>
+        cmd.name.startsWith(trimmedInput)
+    );
+}
+
+
+// Builds the parts of the page that never change after first load:
+// the container, the ASCII art <pre>, the header, and an empty
+// "dynamicWrapper" div that renderDynamic() will manage from now on.
+// This runs exactly ONCE, so it never touches (or interrupts) the
+// art's flicker animation again.
+function renderStatic() {
     root.innerHTML = '';
 
     const container = document.createElement('div');
@@ -395,11 +409,22 @@ function render() {
     header.textContent = "Amir's Shell Terminal";
     container.appendChild(header);
 
-    history.forEach((line, index) => {
+    dynamicWrapper = document.createElement('div');
+    container.appendChild(dynamicWrapper);
+
+    root.appendChild(container);
+}
+
+// Rebuilds ONLY the history/input/suggestions area. The art and header
+// (and, crucially, any in-progress flicker animation class on the art)
+// are never touched by this function.
+function renderDynamic() {
+    dynamicWrapper.innerHTML = '';
+
+    history.forEach((line) => {
         const row = document.createElement('div');
         applyStyles(row, styles.row);
 
-        // 1. Only show the green prompt label if this specific line is a user command
         if (line.type === 'prompt') {
             const promptLabel = document.createElement('span');
             applyStyles(promptLabel, styles.promptLabel);
@@ -407,23 +432,20 @@ function render() {
             row.appendChild(promptLabel);
         }
 
-        // 2. Render the text content, dynamically changing color based on type
         if (line.type === 'link') {
-            // 🌟 If it's a link, render an anchor tag!
             const a = document.createElement('a');
             a.href = line.url;
-            a.target = '_blank'; // Opens the link in a new tab
-            a.rel = 'noopener noreferrer'; // Security best-practice for opening tabs
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
             applyStyles(a, {
                 ...styles.textOutput,
-                color: '#4D4EFF', // Give links a distinct, clickable green glow!
+                color: '#4D4EFF',
                 textDecoration: 'underline',
                 cursor: 'pointer',
             });
             a.textContent = line.text;
             row.appendChild(a);
         } else {
-            // 🌟 Otherwise, keep rendering the normal plain text span
             const span = document.createElement('span');
             applyStyles(span, {
                 ...styles.textOutput,
@@ -442,7 +464,7 @@ function render() {
             row.appendChild(span);
         }
 
-        container.appendChild(row);
+        dynamicWrapper.appendChild(row);
     });
 
     const inputRow = document.createElement('div');
@@ -461,38 +483,37 @@ function render() {
     input.addEventListener('keydown', handleKeyDown);
     inputRow.appendChild(input);
 
-    container.appendChild(inputRow);
+    dynamicWrapper.appendChild(inputRow);
 
     if (suggestions.length > 0) {
         const suggestionsRow = document.createElement('div');
+        suggestionsRow.className = 'suggestions-row'; // add this
         applyStyles(suggestionsRow, styles.suggestionsField);
 
         suggestions.forEach((match) => {
             const line = document.createElement('div');
-            // applyStyles(line, { fontFamily: 'monospace'});
             line.textContent = match.description ? `${match.name.padEnd(10)} - ${match.description}` : match.name;
             suggestionsRow.appendChild(line);
         });
 
-        container.appendChild(suggestionsRow);
+        dynamicWrapper.appendChild(suggestionsRow);
     }
 
-    //   const tracker = document.createElement('p');
-    //   applyStyles(tracker, {
-    //     color: '#888',
-    //     marginTop: '20px',
-    //   });
-    //   tracker.textContent = `State Tracking: "${inputValue}"`;
-    //   container.appendChild(tracker);
-
-    root.appendChild(container);
-
     // keep focus on the input after every re-render, like autoFocus did in React
-    const liveInput = root.querySelector('input');
+    const liveInput = dynamicWrapper.querySelector('input');
     if (liveInput) {
         liveInput.focus();
         liveInput.selectionStart = liveInput.selectionEnd = liveInput.value.length;
     }
+
+    // scroll to whichever element is actually at the bottom
+    const suggestionsEl = dynamicWrapper.querySelector('.suggestions-row');
+    const scrollTarget = suggestionsEl || liveInput;
+    if (scrollTarget) {
+        scrollTarget.scrollIntoView({ block: 'end' });
+    }
 }
-render();
+
+renderStatic();
+renderDynamic();
 startArtCycle();
