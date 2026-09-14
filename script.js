@@ -174,13 +174,13 @@ const commands = {
             return [
                 {
                     text:
-                        `   Name: Amir Saebi
-    Role: Computer Engineering Student @ AYBU
-     Location: Ankara, Turkey
-      Stack: Java, C#, C++, JS, Python
-       Focus: OOP, data structures, Game Development
-        Currently exploring: game dev (Unreal Engine and Unity)
-         Philosophy: build it from scratch before reaching for a library`,
+                        `Name: Amir Saebi
+Role: Computer Engineering Student @ AYBU
+Location: Ankara, Turkey
+Stack: Java, C#, C++, JS, Python
+Focus: OOP, data structures, Game Development
+Currently exploring: game dev (Unreal Engine and Unity)
+Philosophy: build it from scratch before reaching for a library`,
                     type: 'output',
                 },
             ];
@@ -210,11 +210,32 @@ const commands = {
                 ];
             }
 
-            const targetID = args[0];
+            const targetID = parseInt(args[0], 10);
+
+            if (isNaN(targetID)) {
+                return [
+                    { text: 'Error: project id must be a number', type: 'error' },
+                ];
+            }
+
             const project = projects.find(item => item.id === targetID);
 
-            console.log(project);
+            if (!project) {
+                return [
+                    { text: `Error: no project with id ${targetID}`, type: 'error' },
+                ];
+            }
 
+            const lines = [
+                { text: `Name: ${project.name}`, type: 'output' },
+                { text: `Brief: ${project.brief}`, type: 'output' },
+            ];
+
+            if (project.url) {
+                lines.push({ text: project.url, type: 'link', url: project.url });
+            }
+
+            return lines;
         }
     },
     contact: {
@@ -362,7 +383,7 @@ function handleKeyDown(event) {
             newLines = [...newLines, ...outputs];
         } else {
             newLines.push({
-                text: `command not found: '${commandName}'. Type 'help' for options.`,
+                text: `command not found: '${commandName}'.`,
                 type: 'error',
             });
         }
