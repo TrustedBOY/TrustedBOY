@@ -13,10 +13,11 @@ const styles = {
     asciiArt: {
         color: '#00ff88',
         fontFamily: 'monospace',
-        fontSize: '12px',
-        lineHeight: '14px',
+        fontSize: 'clamp(4px, 2vw, 12px)', // shrinks on narrow viewports, caps at 12px on desktop
+        lineHeight: '1.15',
         whiteSpace: 'pre',
         margin: '30px 0 50px 0px',
+        overflowx: 'auto',
     },
     header: {
         color: '#00ff88',
@@ -90,11 +91,11 @@ styleTag.textContent = `
     48%  { opacity: 0.2; }
     50%  { opacity: 0.8; }
     52%  { opacity: 0.1; }
-    55%  { opacity: 1; }
+    90%  { opacity: 1; }
     100% { opacity: 1; }
 }
 .art-flicker {
-    animation: flicker 0.4s linear;
+    animation: flicker 3.0s linear;
 }
 `;
 document.head.appendChild(styleTag);
@@ -174,8 +175,12 @@ const commands = {
                 {
                     text:
                         `Name: Amir Saebi
-Role: Computer Engineering Student
-Stack: Java, C#, C++, JS`,
+Role: Computer Engineering Student @ AYBU
+Location: Ankara, Turkey
+Stack: Java, C#, C++, JS
+Focus: OOP, data structures, computer architecture
+Currently exploring: game dev (Unity), MySQL, AI
+Philosophy: build it from scratch before reaching for a library`,
                     type: 'output',
                 },
             ];
